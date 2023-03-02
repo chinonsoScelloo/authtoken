@@ -1,9 +1,9 @@
-const router = require('express'); //.Router();
-
+const router = require('express').Router(); //.Router();
+const User = require('../model/User')
 router.post('/register',(req,res)=>{
-    res.send('Register');
+//res.send('Register');
 
-})
+});
 
 
 
