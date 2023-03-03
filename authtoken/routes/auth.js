@@ -37,7 +37,7 @@ const user = new User({
 });
 try {
     const savedUser = await user.save();
-    res.send(savedUser);
+    res.send({user:user._id});
 } catch (err) {
  res.status(400).send(err)   
 }
@@ -48,5 +48,16 @@ try {
 
 
 //router.post('/login',(req,res)=>{})
+router.post('/login',async (res,req)=>{
+  
+    const {error} = loginValidation(req.body);
+    //CHECK FOR ERROR
+    if (error) return res.status(400).send(error.details[0].message);
+    
+    //CHECK IF USER EXIST
+    const emailExist = await User.findOne({email: req.body.email});
+    const usernameExist = await User.findOne({username: req.body.username});
+    if (!emailExist || !usernameExist) return res.status(500).send('Email or Password does not exist');    
+})
 
 module.exports = router;
