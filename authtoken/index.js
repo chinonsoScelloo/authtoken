@@ -14,7 +14,7 @@ mongoose.connect(process.env.DB_CONNECT,
 .catch((err)=>{console.log("failed to connect to MongoDb",err)});
 
 //middleware
-app.use(express.json);
+app.use(express.json());
 //Routes middleware
 app.use('/api/user',authRoute);
 app.listen(3000,() => console.log("running on port 3000"));
