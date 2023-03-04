@@ -1,8 +1,9 @@
 const router = require('express').Router(); //.Router();
 //move the schema to a file called validation.js
-const {registerValidation, loginValidation} = require('../validation');
+const {registerValidation,loginValidation} = require('../validation');
 const User = require('../model/User');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 
 router.post('/register', async (req,res)=>{
@@ -48,16 +49,26 @@ try {
 
 
 //router.post('/login',(req,res)=>{})
-router.post('/login',async (res,req)=>{
-  
-    const {error} = loginValidation(req.body);
+router.post('/login', async(req,res)=>{
+    const { error } = loginValidation(req.body);
     //CHECK FOR ERROR
     if (error) return res.status(400).send(error.details[0].message);
     
     //CHECK IF USER EXIST
-    const emailExist = await User.findOne({email: req.body.email});
+    const user = await User.findOne({ email: req.body.email });
     const usernameExist = await User.findOne({username: req.body.username});
-    if (!emailExist || !usernameExist) return res.status(500).send('Email or Password does not exist');    
+    if (!user || usernameExist) return res.status(500).send('Email or Password does not exist');
+
+    // CHECK IF PASSWORD IS VALID
+    const validPass = bcrypt.compare(req.body.password, user.password);
+    if(!validPass)return res.status(500).send('Incorrect user email and password ');
+
+    //CREATE TOKEN 
+    const token = jwt.sign({_id: user._id},process.env.TOKEN_ID);
+    res.header('auth-token',token).send(token);
+
+
+    //res.send('SUCCESSFULLY LOGIN');
 })
 
 module.exports = router;
