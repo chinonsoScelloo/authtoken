@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 
 //import Routes
 const authRoute = require('./routes/auth');
+const postRoute = require('./routes/posts');
 
 dotenv.config();
 //Connect to db
@@ -15,6 +16,9 @@ mongoose.connect(process.env.DB_CONNECT,
 
 //middleware
 app.use(express.json());
+
 //Routes middleware
 app.use('/api/user',authRoute);
+app.use('/api/posts',postRoute);
+
 app.listen(3000,() => console.log("running on port 3000"));
